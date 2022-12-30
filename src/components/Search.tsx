@@ -1,25 +1,26 @@
 import React, { useState } from "react";
 import moment from "moment";
-import { location } from "../App";
 
-interface props {
-  setSearch: React.Dispatch<React.SetStateAction<location>>;
-}
+import { useDispatch } from "react-redux";
+import { setSearch } from "../redux/features/searchSlice";
 
-const Search: React.FC<props> = ({ setSearch }) => {
+const Search: React.FC = () => {
+  const dispatch = useDispatch();
   const [city, setCity] = useState<string>("");
   const [country, setCountry] = useState<string>("");
 
   const handleCity = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCity(e.target.value);
   };
+
   const handleCountry = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCountry(e.target.value);
   };
+
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     const time = moment().format("LTS");
-    setSearch({ city, country, time });
+    dispatch(setSearch({ city, country, time }));
     setCity("");
     setCountry("");
   };

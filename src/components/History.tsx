@@ -1,24 +1,24 @@
 import React from "react";
 import moment from "moment/moment";
 
-import { location } from "../App";
-
 import { AiOutlineSearch } from "react-icons/Ai";
 import { BsFillTrashFill } from "react-icons/Bs";
+import { useDispatch, useSelector } from "react-redux";
+import { setSearch } from "../redux/features/searchSlice";
+import { deleteHistory } from "../redux/features/historySlice";
 
-interface props {
-  history: location[];
-  setHistory: React.Dispatch<React.SetStateAction<location[]>>;
-  setSearch: React.Dispatch<React.SetStateAction<location>>;
-}
+import { Location } from "../redux/type";
+import type { RootState } from "../redux/store";
 
-const History: React.FC<props> = ({ history, setHistory, setSearch }) => {
+const History: React.FC = () => {
+  const dispatch = useDispatch();
+  const history = useSelector((state: RootState) => state.history);
   const handleSearch = (country?: string, city?: string) => {
     const time = moment().format("LTS");
-    setSearch({ country, city, time });
+    dispatch(setSearch({ city, country, time }));
   };
-  const handleClear = (item: location) => {
-    setHistory(history.filter((res) => res !== item));
+  const handleClear = (item: Location) => {
+    dispatch(deleteHistory(history.filter((res) => res !== item)));
   };
 
   return (
@@ -29,7 +29,7 @@ const History: React.FC<props> = ({ history, setHistory, setSearch }) => {
       <div className="table">
         <ul>
           {history.length
-            ? history.map((item: location, i) => (
+            ? history.map((item: Location, i) => (
                 <li key={i}>
                   <div className="left">
                     {i + 1}. {item.country},{item.city}

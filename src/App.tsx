@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import moment from "moment";
 
 import "./App.css";
@@ -12,64 +13,35 @@ import Loading from "./components/Loading";
 import Error from "./components/Error";
 
 import { useGetWeatherDataQuery } from "./redux/services/getWeatherApi";
-
-export interface location {
-  city?: string;
-  country?: string;
-  time: string;
-}
-
-export interface weather {
-  main: string;
-  description: string;
-  minTemp: string;
-  maxTemp: string;
-  humidity: string;
-  time: string;
-}
+import { setHistory } from "./redux/features/historySlice";
+import { setWeatherData } from "./redux/features/weatherSlice";
+import type { RootState } from "./redux/store";
 
 function App() {
-  const [weatherData, setWeatherData] = useState<weather>({
-    main: "",
-    description: "",
-    minTemp: "",
-    maxTemp: "",
-    humidity: "",
-    time: "",
-  });
+  const dispatch = useDispatch();
 
-  const [search, setSearch] = useState<location>({
-    city: "tw",
-    country: "taipei",
-    time: moment().format("LTS"),
-  });
-
-  const [history, setHistory] = useState(() => {
-    return JSON.parse(localStorage.getItem("history") || "[]");
-  });
+  const { search, history } = useSelector((state: RootState) => state);
 
   const { data, isFetching, error } = useGetWeatherDataQuery(search);
 
   const MainSection = () => {
     if (isFetching) return <Loading />;
     else if (error) return <Error />;
-    else return <WeatherCard search={search} weatherData={weatherData} />;
+    else return <WeatherCard />;
   };
 
   useEffect(() => {
-    setWeatherData({
-      main: data?.weather[0].main,
-      description: data?.weather[0].description,
-      minTemp: data?.main.temp_min,
-      maxTemp: data?.main.temp_max,
-      humidity: data?.main.humidity,
-      time: moment().format("lll"),
-    });
-    if (data)
-      setHistory([
-        ...history,
-        { city: search.city, country: search.country, time: search.time },
-      ]);
+    dispatch(
+      setWeatherData({
+        main: data?.weather[0].main,
+        description: data?.weather[0].description,
+        minTemp: data?.main.temp_min,
+        maxTemp: data?.main.temp_max,
+        humidity: data?.main.humidity,
+        time: moment().format("lll"),
+      })
+    );
+    if (data) dispatch(setHistory(search));
   }, [data]);
 
   useEffect(() => {
@@ -79,13 +51,9 @@ function App() {
   return (
     <div className="App">
       <Header />
-      <Search setSearch={setSearch} />
+      <Search />
       <MainSection />
-      <History
-        history={history}
-        setHistory={setHistory}
-        setSearch={setSearch}
-      />
+      <History />
     </div>
   );
 }

@@ -2,6 +2,8 @@
 
 This test project is designed for 頂尖營銷傳媒有限公司 job interview .
 
+Use Skills : React, TypeScript, Redux, Redux toolkit, Scss .
+
 In the project directory, 
 
 first you should go to https://openweathermap.org/api and get an Api key,

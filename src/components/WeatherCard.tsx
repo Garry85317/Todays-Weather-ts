@@ -1,16 +1,12 @@
 import React from "react";
-import { location, weather } from "../App";
+import { useSelector } from "react-redux";
+import { RootState } from "../redux/store";
 
-interface PostsProps {
-  search: location;
-  weatherData: weather;
-}
-
-const WeatherCard: React.FC<PostsProps> = ({ search, weatherData }) => {
-  if (!weatherData.main) return <div className="weatherCard"></div>;
-
-  const { main, description, minTemp, maxTemp, humidity, time } = weatherData;
-  const { city, country } = search;
+const WeatherCard: React.FC = () => {
+  const { city, country } = useSelector((state: RootState) => state.search);
+  const { main, description, minTemp, maxTemp, humidity, time } = useSelector(
+    (state: RootState) => state.weatherData
+  );
 
   return (
     <div className="weatherCard">
